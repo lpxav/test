@@ -96,7 +96,7 @@ function addSong() {
   const youtubeId = parseYouTubeId(url);
   if (!youtubeId) return alert('Lien YouTube invalide');
 
-  const song = { id: crypto.randomUUID(), youtubeId, title: `Morceau ${state.songs.length + 1}` };
+  const song = { id: crypto.randomUUID(), youtubeId, url, title: `Morceau ${state.songs.length + 1}` };
   state.songs.push(song);
   state.currentSongId = song.id;
   state.chordsBySong[song.id] = [];
@@ -104,6 +104,42 @@ function addSong() {
   renderPlayer();
   renderPlaylist();
   renderTimeline();
+}
+
+
+async function detectChordsFromVideo() {
+  if (!state.currentSongId) return alert('Ajoute/sélectionne un morceau');
+  const song = state.songs.find(s => s.id === state.currentSongId);
+  if (!song?.url) return alert('URL YouTube manquante');
+
+  const btn = document.getElementById('detectAutoBtn');
+  const previous = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Détection...';
+
+  try {
+    const res = await fetch('http://localhost:5000/api/detect-chords', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ youtubeUrl: song.url })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erreur API');
+
+    state.chordsBySong[state.currentSongId] = (data.chords || []).map(c => ({
+      timecode: c.timecode,
+      chord: c.chord,
+      sec: timeToSeconds(c.timecode) ?? 0,
+      auto: true
+    }));
+    setMode('auto');
+    renderTimeline();
+  } catch (e) {
+    alert(`Détection impossible: ${e.message}`);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = previous;
+  }
 }
 
 function addChord() {
@@ -124,6 +160,7 @@ document.getElementById('addSongBtn').onclick = addSong;
 document.getElementById('addChordBtn').onclick = addChord;
 document.getElementById('manualModeBtn').onclick = () => setMode('manual');
 document.getElementById('autoModeBtn').onclick = () => setMode('auto');
+document.getElementById('detectAutoBtn').onclick = detectChordsFromVideo;
 
 function setMode(mode) {
   state.mode = mode;
