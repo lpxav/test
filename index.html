@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Guitar Sync Rehearsal</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Guitar Sync Rehearsal</h1>
+      <p>YouTube + playlist + accords synchronisés + doigtés</p>
+    </header>
+
+    <main class="layout">
+      <section class="panel left">
+        <h2>YouTube & Playlist</h2>
+        <div class="row">
+          <input id="youtubeUrl" placeholder="Colle un lien YouTube" />
+          <button id="addSongBtn">Ajouter</button>
+        </div>
+
+        <div id="playerContainer" class="player-container"></div>
+
+        <ul id="playlist" class="playlist"></ul>
+      </section>
+
+      <section class="panel right">
+        <div class="right-top">
+          <h2>Accords & Doigtés</h2>
+          <div class="mode-buttons">
+            <button id="manualModeBtn" class="active">Mode manuel</button>
+            <button id="autoModeBtn">Mode auto</button>
+          </div>
+        </div>
+
+        <div class="row">
+          <input id="timecodeInput" placeholder="mm:ss" />
+          <input id="chordInput" placeholder="Accord (ex: Am)" />
+          <button id="addChordBtn">Ajouter accord</button>
+        </div>
+
+        <ul id="chordTimeline" class="timeline"></ul>
+
+        <div class="diagram">
+          <h3>Doigté actuel</h3>
+          <pre id="chordDiagram">Sélectionne un accord.</pre>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
